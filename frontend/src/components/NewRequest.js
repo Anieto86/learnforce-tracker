@@ -8,6 +8,17 @@ import Select from "@material-ui/core/Select";
 import styled from "styled-components";
 
 
+const TitleStyled = styled.h2`
+  display: flex;
+  justify-content: flex-start;
+`;
+
+const LineStyled = styled.hr`
+ padding: 1.5px;
+ background: rgb(7,103,195);
+background: linear-gradient(90deg, rgba(7,103,195,1) 14%, rgba(175,172,172,1) 14%);
+`;
+
 const BtnRequestStyled = styled.button`
 float: left;
 margin-top:20px;
@@ -24,7 +35,7 @@ function NewRequest() {
 
   useEffect(() => {
    axios
-     .get("http://localhost:5000/api/tickets")
+     .put("http://localhost:5000/api/tickets")
      .then((res) => {
        console.log(res);
        setTickets(res.data);
@@ -46,7 +57,12 @@ function NewRequest() {
   };
 
   return (
-    <form className='container'>
+    <div className='container'>
+       <div>
+        <TitleStyled> New feature request</TitleStyled>
+      </div>
+      <LineStyled />
+    <form>
       <div className='row'>
         <div className='col-6'>
           <TextField
@@ -91,7 +107,7 @@ function NewRequest() {
           <TextField
             id='standard-full-width'
             label='Client*'
-            placeholder='Example input placeholder'
+            placeholder='enter client name'
             style={{ margin: 8 }}
             fullWidth
             margin='normal'
@@ -115,7 +131,7 @@ function NewRequest() {
           />
         </div>
         <div className='col-6'>
-          <InputLabel htmlFor='age-native-simple'>--Select crm--</InputLabel>
+          <InputLabel htmlFor='age-native-simple ' style={{ margin: 6  }}>--Select crm--</InputLabel>
           <Select native value={state.age} onChange={handleChange}>
             <option aria-label='None' value='' />
             <option value={10}>Robin Bleck</option>
@@ -129,7 +145,8 @@ function NewRequest() {
       <BtnRequestStyled
         onClick={handleUpdate}
         type='button' className='btn btn-primary btn-lg'>Request feature!</BtnRequestStyled>
-    </form>
+      </form>
+      </div>
   );
 }
 
