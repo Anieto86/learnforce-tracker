@@ -1,10 +1,28 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import axios from "axios";
 
 //todo styled and icons
 // import styled from "styled-components";
 import { BsThreeDots } from "react-icons/bs";
 
 function Table() {
+
+  const [data, setData] = useState([]); 
+
+
+  useEffect(() => {
+    axios
+    .get("/api/tickets")
+    .then((res) => {
+      console.log(res);
+      setData(res.data);
+    })
+    .catch((err) => console.log(err));
+}, []);
+
+
+
+
   return (
     <table className='container table table-striped'>
       <thead>
