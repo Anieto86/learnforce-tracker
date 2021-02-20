@@ -1,19 +1,30 @@
+import "./App.css";
 
-import './App.css';
+//react router
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 //*components
-import Navbar from './components/Navbar';
-import FilterInput from './components/FilterInput';
-import Table from './components/Table';
-import ButtonRequest from './components/ButtonRequest';
+import Navbar from "./components/Navbar";
+import Table from "./components/Table";
+import ButtonRequest from "./components/ButtonRequest";
+import NewRequest from "./components/NewRequest";
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <FilterInput />
-      <Table />
-      <ButtonRequest/>
+    <div className='App'>
+      <Router>
+        <Navbar />
+        <Route exact path='/'>
+          
+          <Table />
+          <ButtonRequest/>
+        </Route>
+
+        <Route path='/newReques' >
+        <NewRequest />
+        </Route>
+        
+      </Router>
     </div>
   );
 }

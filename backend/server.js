@@ -1,15 +1,25 @@
 //*entry point  for the backend
-const express = require('express');
-const bodyParser = require('body-parser');
-const _ = require('lodash');
-const cors = require('cors');
+import express from 'express';
+import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
+import _ from 'lodash'; 
+import cors from 'cors';
+
+//import connectDB from "./config/db.js";
+
+
+dotenv.config();
+
+connectDB()
 
 //data source
-const tickets = require('./data/tickets')
+import tickets from './data/tickets.js';
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+
+
 
 //*Routes
 app.get('/', (req, res) => {
@@ -62,7 +72,7 @@ app.post('/tickets', function(req, res) {
 
 
 //*setup server
-const PORT = 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, function () {
     console.log(`🌎  ==> API Server now listening on PORT ${PORT}!`);
   });

@@ -1,15 +1,28 @@
-import React from 'react'
+import React from "react";
+import { Link } from "react-router-dom";
 
 //todo styled and icons
-// import styled from "styled-components";
-import {GoPlus} from "react-icons/go";
+import styled from "styled-components";
+import { GoPlus } from "react-icons/go";
+
+const BtnRequestStyled = styled.button`
+float: left;
+margin-top:20px;
+background-color:#0599fd;
+`;
 
 function ButtonRequest() {
-    return (
-        <div>
-            <button type="button" class="btn btn-primary btn-lg"><GoPlus/> Request new feature</button>
-        </div>
-    )
+
+
+  return (
+    <div className='container'>
+      <Link to={"/newReques"}>
+        < BtnRequestStyled type='button' className='btn btn-primary btn-lg'>
+          <GoPlus /> Request new feature
+        </ BtnRequestStyled>
+      </Link>
+    </div>
+  );
 }
 
-export default ButtonRequest
+export default ButtonRequest;
