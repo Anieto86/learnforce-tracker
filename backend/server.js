@@ -2,19 +2,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
+const cors = require('cors');
 
 //data source
 const tickets = require('./data/tickets')
 
 const app = express();
-
+app.use(bodyParser.json());
+app.use(cors());
 
 //*Routes
 app.get('/', (req, res) => {
     res.send ("Api is running, arde papi")
 })
 
-//all the tikets (CRUD)
+//(CRUD)
 app.get('/api/tickets', (req, res) => {
     res.json(tickets)
 })
