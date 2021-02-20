@@ -10,7 +10,7 @@ import cors from 'cors';
 
 dotenv.config();
 
-connectDB()
+//connectDB()
 
 //data source
 import tickets from './data/tickets.js';
