@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import axios from "axios";
 
 import { TextField } from "@material-ui/core";
@@ -48,6 +48,8 @@ function NewRequest() {
       setCrm(e.target.value)
   }
 
+  const history = useHistory();
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     let payload = {'title': title, 'client': client, 'crm': crm}
@@ -55,13 +57,7 @@ function NewRequest() {
     .then((res) => {
       console.log(res.data, "add");
     })
-    // await axios
-    //   .get(`http://localhost:5000/api/tickets`)
-    //   .then((res) => {
-    //     console.log(res, "get");
-    //     props.setTickets(res.data);
-    //   })
-    //   .catch((err) => console.log(err));
+    history.goBack();
   };
   
   
@@ -104,7 +100,7 @@ function NewRequest() {
         </div>
         <div className='row'>
           <div className='col-12'>
-            <InputLabel htmlFor='age-native-simple ' style={{ margin: 6 }}>
+            <InputLabel htmlFor='age-native-simple d-grid block ' style={{ margin: 6 }}>
               --Select crm--
             </InputLabel>
             <Select native onChange={handleCrmChange}>

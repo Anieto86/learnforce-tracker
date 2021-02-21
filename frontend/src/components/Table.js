@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 //todo styled and icons
-import { Dropdown, Modal, Button } from "react-bootstrap";
-// import { BsThreeDots } from "react-icons/bs";
+import { Dropdown } from "react-bootstrap";
+
 import { FaFilter, FaCloudUploadAlt } from "react-icons/fa";
-//import { ImSearch } from "react-icons/im";
 
-import EditModalComponent from "./EditModalComponent"
 
+import EditModalComponent from "./EditModalComponent";
 
 //todo styled and icons
 import styled from "styled-components";
@@ -46,6 +45,8 @@ const SearchStyle = styled.div`
 const TableStyle = styled.table`
   margin-top: 50px;
   text-align: left;
+  overflow: auto;
+  max-height: 100px;
 `;
 
 const StyledDropdown = styled.div`
@@ -53,22 +54,21 @@ const StyledDropdown = styled.div`
   .remove-caret.dropdown-toggle::after {
     display: none;
   }
-
 `;
 
-const BtnRequestStyled = styled.button`
-float: left;
-margin-top:20px;
-background-color:#0599fd;
-`;
+// const BtnRequestStyled = styled.button`
+//   float: left;
+//   margin-top: 20px;
+//   background-color: #0599fd;
+// `;
 
 function Table() {
   const [tickets, setTickets] = useState([]);
   const [search, setSearch] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editTicketId, setEditTicketId] = useState('');
+  const [editTicketId, setEditTicketId] = useState("");
 
-  console.log(showEditModal, 'show edit modal')
+  console.log(showEditModal, "show edit modal");
   //!API Call
   useEffect(() => {
     axios
@@ -80,54 +80,51 @@ function Table() {
       .catch((err) => console.log(err));
   }, []);
 
-  useEffect(() => {
-
-  })
+  useEffect(() => {});
 
   const searchTicket = tickets.filter((ticket) => {
     return ticket.title.toLowerCase().includes(search.toLowerCase());
   });
 
   const statusUpdateClick = async (id, statusUpdate) => {
-    const ticketToModify = tickets.find(ticket => ticket.id === id)
-    ticketToModify.status = statusUpdate
-    await axios.put(`http://localhost:5000/tickets/${id}`, ticketToModify)
-    .then((res) => {
-      console.log(res.data, "update");
-    })
+    const ticketToModify = tickets.find((ticket) => ticket.id === id);
+    ticketToModify.status = statusUpdate;
     await axios
-      .get(`http://localhost:5000/api/tickets`)
+      .put(`http://localhost:5000/tickets/${id}`, ticketToModify)
       .then((res) => {
-        console.log(res, "get");
-        setTickets(res.data);
-      })
-  }
+        console.log(res.data, "update");
+      });
+    await axios.get(`http://localhost:5000/api/tickets`).then((res) => {
+      console.log(res, "get");
+      setTickets(res.data);
+    });
+  };
 
   const deleteTicket = async (id) => {
     await axios
-    .delete(`http://localhost:5000/tickets/${id}`)
-    .then((res) => {
-      console.log(res.data, "delete");
-    })
+      .delete(`http://localhost:5000/tickets/${id}`)
+      .then((res) => {
+        console.log(res.data, "delete");
+      })
       .catch((err) => console.log(err));
-   await axios
+    await axios
       .get(`http://localhost:5000/api/tickets`)
       .then((res) => {
         console.log(res, "get");
         setTickets(res.data);
       })
       .catch((err) => console.log(err));
-  }
+  };
 
   const handleClose = () => {
     setShowEditModal(false);
-  }
-  
+  };
+
   const launchEditModal = useCallback((id) => {
-    setEditTicketId(id)
-    setShowEditModal(true)
-  },[])
- 
+    setEditTicketId(id);
+    setShowEditModal(true);
+  }, []);
+
   return (
     <div className='container'>
       <div>
@@ -181,63 +178,93 @@ function Table() {
               <td>{ticket.title}</td>
               <td>{ticket.client}</td>
               <td>{ticket.crm}</td>
-              <td>{ticket.submited}</td>
-              <td  >{ticket.status}</td>
+              <td>{new Date(ticket.createdAt).toLocaleDateString()}</td>
+              <td>{ticket.status}</td>
               <td>
-              <StyledDropdown >
-                <Dropdown >
+                <StyledDropdown>
+                  <Dropdown>
                     <Dropdown.Toggle
-                      style={{ color: '#0599fd', size: '20px' }}
-                       variant= 'btn btn'
-                       id="dropdown-basic"
-                       className="remove-caret" > ...
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    <Dropdown.Item eventKey='baudratestate1200'></Dropdown.Item>
-                    
-                    <Dropdown.Item eventKey='baudratestate2400' className="set-status-header">
+                      style={{ color: "#0599fd", size: "20px" }}
+                      variant='btn btn'
+                      id='dropdown-basic'
+                      className='remove-caret'
+                    > ...
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Header
+                        eventKey='baudratestate2400'
+                        className='set-status-header'
+                      >
                         Set status
-                    </Dropdown.Item>
-                    <Dropdown.Item as="button" onClick={() => statusUpdateClick( ticket.id, 'BACKLOG' )} eventKey={ticket.id} >     
-                     Backlog
-                    </Dropdown.Item>
-                    <Dropdown.Item  as="button"onClick={() => statusUpdateClick( ticket.id, 'PLANNED' )} eventKey={ticket.id}>
-                      Planned
-                    </Dropdown.Item>
-                    <Dropdown.Item   as="button" onClick={() => statusUpdateClick( ticket.id, 'IN DEVELOPMENT' )} eventKey={ticket.id}>
-                      In Development
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate9600' className="actions-header">
-                      Actions
-                    </Dropdown.Item>
+                      </Dropdown.Header>
+                      <Dropdown.Divider />
                       <Dropdown.Item
-                        eventKey='baudratestate9600' onClick={()=> launchEditModal(ticket.id)}>
-                      Edit
-                    </Dropdown.Item>
-                    <Dropdown.Item as="button" eventKey='baudratestate9600' onClick={()=> deleteTicket(ticket.id)}>
-                      Delete
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-            </StyledDropdown >
+                        style={{color: '#0599fd'}}
+                        as='button'
+                        onClick={() => statusUpdateClick(ticket.id, "BACKLOG")}
+                        eventKey={ticket.id}
+                      >
+                        Backlog
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                          style={{color: '#0599fd'}}
+                        as='button'
+                        onClick={() => statusUpdateClick(ticket.id, "PLANNED")}
+                        eventKey={ticket.id}
+                      >
+                        Planned
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                          style={{color: '#0599fd'}}
+                        as='button'
+                        onClick={() =>
+                          statusUpdateClick(ticket.id, "IN DEVELOPMENT")
+                        }
+                        eventKey={ticket.id}
+                      >
+                        In Development
+                      </Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Header
+                        eventKey='baudratestate9600'
+                        className='actions-header'
+                      >
+                        Actions
+                      </Dropdown.Header>
+                      <Dropdown.Divider />
+                      <Dropdown.Item
+                          style={{color: '#0599fd'}}
+                        eventKey='baudratestate9600'
+                        onClick={() => launchEditModal(ticket.id)}
+                      >
+                        Edit
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        as='button'
+                        eventKey='baudratestate9600'
+                        onClick={() => deleteTicket(ticket.id)}
+                        style={{color: '#0599fd'}}
+                      >
+                        Delete
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </StyledDropdown>
               </td>
             </tr>
           ))}
         </tbody>
+        </TableStyle>
         
-      </TableStyle>
 
       {showEditModal && (
-
-        <EditModalComponent 
-          showEditModal={showEditModal}   
-          setShowEditModal={setShowEditModal} 
-          handleClose={handleClose} 
+        <EditModalComponent
+          showEditModal={showEditModal}
+          setShowEditModal={setShowEditModal}
+          handleClose={handleClose}
           editTicketId={editTicketId}
           setTickets={setTickets}
         />
-      
       )}
     </div>
   );
