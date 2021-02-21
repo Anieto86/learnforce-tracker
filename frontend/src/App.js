@@ -13,14 +13,15 @@ function App() {
   return (
     <div className='App'>
       <Router>
+
         <Navbar />
+
         <Route exact path='/'>
-          
           <Table />
           <ButtonRequest/>
         </Route>
 
-        <Route path='/newReques' >
+        <Route path='/newRequest' >
         <NewRequest />
         </Route>
         

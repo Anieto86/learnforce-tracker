@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, {useState} from "react";
 import axios from "axios";
+
+import { Modal, Button } from "react-bootstrap";
 
 import { TextField } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -8,70 +9,69 @@ import Select from "@material-ui/core/Select";
 
 import styled from "styled-components";
 
+
 const TitleStyled = styled.h2`
   display: flex;
   justify-content: flex-start;
 `;
 
 const LineStyled = styled.hr`
-  padding: 1.5px;
-  background: rgb(7, 103, 195);
-  background: linear-gradient(
-    90deg,
-    rgba(7, 103, 195, 1) 14%,
-    rgba(175, 172, 172, 1) 14%
-  );
+ padding: 1.5px;
+ background: rgb(7,103,195);
+background: linear-gradient(90deg, rgba(7,103,195,1) 14%, rgba(175,172,172,1) 14%);
 `;
 
 const BtnRequestStyled = styled.button`
-  float: left;
-  margin-top: 20px;
-  background-color: #0599fd;
+float: left;
+margin-top:20px;
+background-color:#0599fd;
 `;
 
-function NewRequest() {
-  const [title, setTitle] = useState('');
+function EditModalComponent(props) {
+
+    const [title, setTitle] = useState('');
     const [client, setClient] = useState('');
     const [crm, setCrm] = useState('');
-  
 
     const handleTitleChange = (e) => {
-      setTitle(e.target.value)
-      console.log(e.target.value);
-  }
+        setTitle(e.target.value)
+    }
 
-  const handleClientChange = (e) => {
-      setClient(e.target.value)
-  }
+    const handleClientChange = (e) => {
+        setClient(e.target.value)
+    }
 
-  const handleCrmChange = (e) => {
-      setCrm(e.target.value)
-  }
-
-  const handleAddSubmit = async (e) => {
+    const handleCrmChange = (e) => {
+        setCrm(e.target.value)
+    }
+  
+    const handleEditSubmit = async (e) => {
     e.preventDefault();
     let payload = {'title': title, 'client': client, 'crm': crm}
-    await axios.post(`http://localhost:5000/tickets/`, payload)
+    await axios.post(`http://localhost:5000/tickets/${props.editTicketId}`, payload)
     .then((res) => {
-      console.log(res.data, "add");
+      console.log(res.data, "update");
     })
-    // await axios
-    //   .get(`http://localhost:5000/api/tickets`)
-    //   .then((res) => {
-    //     console.log(res, "get");
-    //     props.setTickets(res.data);
-    //   })
-    //   .catch((err) => console.log(err));
+    await axios
+      .get(`http://localhost:5000/api/tickets`)
+      .then((res) => {
+        console.log(res, "get");
+        props.setTickets(res.data);
+      })
+      .catch((err) => console.log(err));
+    props.setShowEditModal(false)
   };
   
-  
+
   return (
-    <div className='container'>
-      <div>
-        <TitleStyled> New feature request</TitleStyled>
-      </div>
-      <LineStyled />
-      <form onSubmit={handleAddSubmit}>
+    <Modal show={props.showEditModal} onHide={props.handleClose} backdrop="static" centered>
+        <Modal.Body>
+          <div className='container'>
+            <div>
+              <TitleStyled> Edit Ticket</TitleStyled>
+            </div>
+              <LineStyled />
+              <form onSubmit={handleEditSubmit}>
         <div className='row'>
           <div className='col-12'>
             <TextField
@@ -116,14 +116,19 @@ function NewRequest() {
             </Select>
           </div>
         </div>
-        <Link to={'/'} onClick={handleAddSubmit}>
-        <BtnRequestStyled type='submit'  className='btn btn-primary btn-lg'>
-          Request feature!
-        </BtnRequestStyled>
-        </Link>
       </form>
-    </div>
+            </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="primary" onClick={handleEditSubmit}>
+        Edit Ticket
+        </Button>
+        <Button variant="secondary" onClick={props.handleClose}>
+          Cancel Editing
+        </Button>
+      </Modal.Footer>
+      </Modal>
   );
 }
 
-export default NewRequest;
+export default EditModalComponent;

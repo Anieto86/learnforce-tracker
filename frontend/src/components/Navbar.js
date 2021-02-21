@@ -34,11 +34,11 @@ function Navbar() {
       <div className='container-fluid'>
 
         <button className='btn btn ' style={{backgroundColor: '#204257'}}>
-        <Link className='navbar-brand ' href={"/"} style={{color: 'white'}}  >
+        <Link className='navbar-brand ' to={"/"} style={{color: 'white'}}  >
           <LogoStyle
             src={threeBoxIcon}
             alt=''
-            class='d-inline-block align-top'
+            className='d-inline-block align-top'
           />
           LearnForce
         </Link>

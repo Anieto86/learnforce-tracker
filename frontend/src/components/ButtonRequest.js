@@ -16,7 +16,7 @@ function ButtonRequest() {
 
   return (
     <div className='container'>
-      <Link to={"/newReques"}>
+      <Link to={"/newRequest"}>
         < BtnRequestStyled type='button' className='btn btn-primary btn-lg'>
           <GoPlus /> Request new feature
         </ BtnRequestStyled>

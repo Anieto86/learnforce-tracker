@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import axios from "axios";
 
 //todo styled and icons
-import Dropdown from "react-bootstrap/Dropdown";
-
+import { Dropdown, Modal, Button } from "react-bootstrap";
 // import { BsThreeDots } from "react-icons/bs";
 import { FaFilter, FaCloudUploadAlt } from "react-icons/fa";
 //import { ImSearch } from "react-icons/im";
+
+import EditModalComponent from "./EditModalComponent"
+
 
 //todo styled and icons
 import styled from "styled-components";
@@ -54,28 +56,78 @@ const StyledDropdown = styled.div`
 
 `;
 
+const BtnRequestStyled = styled.button`
+float: left;
+margin-top:20px;
+background-color:#0599fd;
+`;
+
 function Table() {
   const [tickets, setTickets] = useState([]);
   const [search, setSearch] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editTicketId, setEditTicketId] = useState('');
 
+  console.log(showEditModal, 'show edit modal')
   //!API Call
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/tickets")
+      .get(`http://localhost:5000/api/tickets`)
       .then((res) => {
-        console.log(res);
+        console.log(res, "get");
         setTickets(res.data);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  //!filter function
+  useEffect(() => {
+
+  })
+
   const searchTicket = tickets.filter((ticket) => {
     return ticket.title.toLowerCase().includes(search.toLowerCase());
   });
 
- 
+  const statusUpdateClick = async (id, statusUpdate) => {
+    const ticketToModify = tickets.find(ticket => ticket.id === id)
+    ticketToModify.status = statusUpdate
+    await axios.put(`http://localhost:5000/tickets/${id}`, ticketToModify)
+    .then((res) => {
+      console.log(res.data, "update");
+    })
+    await axios
+      .get(`http://localhost:5000/api/tickets`)
+      .then((res) => {
+        console.log(res, "get");
+        setTickets(res.data);
+      })
+  }
 
+  const deleteTicket = async (id) => {
+    await axios
+    .delete(`http://localhost:5000/tickets/${id}`)
+    .then((res) => {
+      console.log(res.data, "delete");
+    })
+      .catch((err) => console.log(err));
+   await axios
+      .get(`http://localhost:5000/api/tickets`)
+      .then((res) => {
+        console.log(res, "get");
+        setTickets(res.data);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  const handleClose = () => {
+    setShowEditModal(false);
+  }
+  
+  const launchEditModal = useCallback((id) => {
+    setEditTicketId(id)
+    setShowEditModal(true)
+  },[])
+ 
   return (
     <div className='container'>
       <div>
@@ -130,7 +182,7 @@ function Table() {
               <td>{ticket.client}</td>
               <td>{ticket.crm}</td>
               <td>{ticket.submited}</td>
-              <td>{ticket.status}</td>
+              <td  >{ticket.status}</td>
               <td>
               <StyledDropdown >
                 <Dropdown >
@@ -138,27 +190,32 @@ function Table() {
                       style={{ color: '#0599fd', size: '20px' }}
                        variant= 'btn btn'
                        id="dropdown-basic"
-                       className="remove-caret"    > ...
+                       className="remove-caret" > ...
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
                     <Dropdown.Item eventKey='baudratestate1200'></Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate2400'>
-                      Set status
+                    
+                    <Dropdown.Item eventKey='baudratestate2400' className="set-status-header">
+                        Set status
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate4800'>
+                    <Dropdown.Item as="button" onClick={() => statusUpdateClick( ticket.id, 'BACKLOG' )} eventKey={ticket.id} >     
+                     Backlog
+                    </Dropdown.Item>
+                    <Dropdown.Item  as="button"onClick={() => statusUpdateClick( ticket.id, 'PLANNED' )} eventKey={ticket.id}>
                       Planned
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate9600'>
+                    <Dropdown.Item   as="button" onClick={() => statusUpdateClick( ticket.id, 'IN DEVELOPMENT' )} eventKey={ticket.id}>
                       In Development
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate9600'>
+                    <Dropdown.Item eventKey='baudratestate9600' className="actions-header">
                       Actions
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate9600'>
+                      <Dropdown.Item
+                        eventKey='baudratestate9600' onClick={()=> launchEditModal(ticket.id)}>
                       Edit
                     </Dropdown.Item>
-                    <Dropdown.Item eventKey='baudratestate9600'>
+                    <Dropdown.Item as="button" eventKey='baudratestate9600' onClick={()=> deleteTicket(ticket.id)}>
                       Delete
                     </Dropdown.Item>
                   </Dropdown.Menu>
@@ -168,7 +225,20 @@ function Table() {
             </tr>
           ))}
         </tbody>
+        
       </TableStyle>
+
+      {showEditModal && (
+
+        <EditModalComponent 
+          showEditModal={showEditModal}   
+          setShowEditModal={setShowEditModal} 
+          handleClose={handleClose} 
+          editTicketId={editTicketId}
+          setTickets={setTickets}
+        />
+      
+      )}
     </div>
   );
 }
